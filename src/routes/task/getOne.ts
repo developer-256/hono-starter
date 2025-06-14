@@ -12,7 +12,7 @@ export const taskGetOne = createRoute({
   tags: tags.task,
   request: {
     params: z.object({
-      id: z.coerce.number().openapi({
+      id: z.coerce.number({ message: "Id must be a valid number" }).openapi({
         param: {
           name: "id",
           in: "path",

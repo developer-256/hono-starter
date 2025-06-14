@@ -12,7 +12,7 @@ export const taskUpdate = createRoute({
   tags: tags.task,
   request: {
     params: z.object({
-      id: z.coerce.number().openapi({
+      id: z.coerce.number({ message: "Id must be a valid number" }).openapi({
         param: {
           name: "id",
           in: "path",
@@ -31,7 +31,7 @@ export const taskUpdate = createRoute({
               done: z.boolean().optional(),
             })
             .superRefine((input, ctx) => {
-              if (input.name === null && input.done === null) {
+              if (!input.name && !input.done) {
                 ctx.addIssue({
                   code: "custom",
                   message: "Change atleast one argument",
@@ -41,7 +41,7 @@ export const taskUpdate = createRoute({
             }),
         },
       },
-      description: "Task to create",
+      description: "Task to Update",
     },
   },
   responses: {
