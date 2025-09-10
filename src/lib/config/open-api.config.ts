@@ -1,6 +1,6 @@
 import { Scalar } from "@scalar/hono-api-reference";
 
-import packageJSON from "../../package.json" with { type: "json" };
+import packageJSON from "../../../package.json" with { type: "json" };
 import type { OpenAPIHono } from "@hono/zod-openapi";
 
 export default function configureOpenAPI(app: OpenAPIHono) {
@@ -8,7 +8,7 @@ export default function configureOpenAPI(app: OpenAPIHono) {
     openapi: "3.0.0",
     info: {
       version: packageJSON.version,
-      title: "Tasks API",
+      title: "Hono Ecom Backend",
     },
   });
 
@@ -22,6 +22,7 @@ export default function configureOpenAPI(app: OpenAPIHono) {
         clientKey: "fetch",
       },
       url: "/api/doc",
+      favicon: `favicon`
     })
   );
 }

@@ -1,12 +1,13 @@
-import "dotenv/config";
-import { defineConfig } from "drizzle-kit";
+import type { Config } from "drizzle-kit";
+import env from "./src/env";
+import { table_filter } from "./src/db/extras/db.utils";
 
-export default defineConfig({
-  out: "./src/db/migrations",
+export default {
   schema: "./src/db/schema",
-  dialect: "turso",
+  out: "./src/db/migrations",
+  dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
-    authToken: process.env.TURSO_DATABASE_AUTH_TOKEN!,
+    url: env.DATABASE_URL,
   },
-});
+  tablesFilter: [table_filter],
+} satisfies Config;

@@ -1,5 +1,9 @@
 import type { ErrorHandler } from "hono";
-import { INTERNAL_SERVER_ERROR, OK } from "../constants/status-codes";
+import {
+  HTTP_STATUS_PHRASE,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} from "../constants/status-codes";
 import type { ContentfulStatusCode, StatusCode } from "hono/utils/http-status";
 import env from "@/env";
 
@@ -14,6 +18,10 @@ export const onError: ErrorHandler = (err, c) => {
   return c.json(
     {
       message: err.message,
+      statusCode: statusCode,
+      error:
+        HTTP_STATUS_PHRASE[statusCode as keyof typeof HTTP_STATUS_PHRASE] ??
+        "Unknown Error",
 
       stack: curr_env === "production" ? undefined : err.stack,
     },
