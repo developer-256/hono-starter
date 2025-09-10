@@ -47,3 +47,6 @@ serve({
 CustomLogger.log(
   `🚀 Server running in ${env.NODE_ENV} mode on port ${env.PORT}`
 );
+CustomLogger.log(
+  `📚 Scalar API documentation available at: http://localhost:${env.PORT}/api/reference`
+);
