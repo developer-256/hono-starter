@@ -1,3 +1,3 @@
 # TODOS
 
-configure biome
+- configure biome
