@@ -1,0 +1,263 @@
+# Hono Starter Project Rules
+
+This document contains the coding standards, patterns, and conventions for the Hono Starter project.
+
+## Overview
+
+This project follows NestJS-inspired naming conventions and patterns while using Hono as the web framework. The codebase emphasizes:
+
+- **Structured Architecture**: Clear module separation with consistent naming
+- **Standardized Responses**: Unified API response patterns
+- **Comprehensive Logging**: Structured logging with Sentry integration
+- **Type Safety**: Full TypeScript coverage with proper typing
+
+## Rule Categories
+
+### 1. [Naming Conventions](./rules/naming-conventions.mdc)
+
+- Module structure and file naming patterns
+- Import/export conventions
+- Variable and function naming standards
+- Consistency rules across the codebase
+
+**Key Points:**
+
+- Controllers: `{module}.controller.ts`
+- Services: `{module}.service.ts`
+- Entities: `{module}.entity.ts`
+- Routes: `{action}.{module}.route.ts`
+
+### 2. [Response Patterns](./rules/response-patterns.mdc)
+
+- Standardized API response utilities
+- Success and error response structures
+- Pagination patterns
+- HTTP status code usage
+
+**Key Points:**
+
+- Use `HONO_RESPONSE()` for success responses
+- Use `HONO_ERROR()` for error responses
+- Use `HONO_PAGINATED_RESPONSE()` for lists
+- Always include proper status codes and messages
+
+### 3. [Logging Patterns](./rules/logging-patterns.mdc)
+
+- Structured logging with context data
+- Sentry integration for error tracking
+- Log level usage guidelines
+- Performance and debugging patterns
+
+**Key Points:**
+
+- Use `HONO_LOGGER` for all logging
+- Always include structured context
+- Integrate with Sentry for production monitoring
+- Follow appropriate log levels
+
+## Project Structure
+
+```
+src/
+├── modules/
+│   ├── auth/
+│   │   ├── entity/
+│   │   │   └── auth.entity.ts
+│   │   └── service/
+│   │       ├── auth-client.ts
+│   │       ├── auth.service.ts
+│   │       ├── auth.ts (Better Auth instance)
+│   │       └── permissions.ts
+│   ├── user/
+│   │   ├── controller/
+│   │   │   └── user.controller.ts
+│   │   ├── entity/
+│   │   │   └── user.entity.ts
+│   │   ├── service/
+│   │   │   └── user.service.ts
+│   │   └── routes/ (for future route handlers)
+│   ├── mailer/
+│   │   ├── controller/
+│   │   │   └── mailer.controller.ts
+│   │   ├── service/
+│   │   │   └── mailer.service.ts
+│   │   ├── routes/
+│   │   │   └── post.mailer.route.ts
+│   │   ├── templates/
+│   │   │   ├── email-verification-otp.ts
+│   │   │   ├── email-verification.ts
+│   │   │   ├── order-confirmation.ts
+│   │   │   ├── password-reset-otp.ts
+│   │   │   ├── password-reset.ts
+│   │   │   ├── signin-otp.ts
+│   │   │   ├── welcome.ts
+│   │   │   └── index.ts
+│   │   ├── index.ts
+│   │   └── README.md
+│   └── module.tags.ts
+├── db/
+│   ├── schema/
+│   │   └── index.ts (exports all entities)
+│   ├── migrations/
+│   │   ├── 0000_certain_spitfire.sql
+│   │   ├── 0001_smart_wolfsbane.sql
+│   │   └── meta/
+│   └── extras/
+│       ├── DB_Backup.md
+│       └── db.utils.ts
+├── lib/
+│   ├── core/
+│   │   ├── create-router.ts
+│   │   ├── hono-logger.ts
+│   │   ├── open-api.config.ts
+│   │   ├── sentry.ts
+│   │   └── SENTRY_SETUP.md
+│   ├── http/
+│   │   └── status-codes.ts
+│   ├── middlewares/
+│   │   ├── auth.middleware.ts
+│   │   ├── cors.middleware.ts
+│   │   ├── favicon-middleware.ts
+│   │   ├── not-found-middleware.ts
+│   │   ├── on-error.middleware.ts
+│   │   └── sentry.middleware.ts
+│   ├── schemas/
+│   │   └── api-schemas.ts
+│   └── utils/
+│       ├── async-utils.ts
+│       ├── index.ts
+│       ├── response-utils.ts
+│       ├── string-utils.ts
+│       └── README.md
+├── env.ts
+└── main.ts
+```
+
+## Quick Reference
+
+### Creating a New Module
+
+1. Create module directory: `src/modules/{module-name}/`
+2. Add controller: `controller/{module-name}.controller.ts`
+3. Add service: `service/{module-name}.service.ts`
+4. Add entity: `entity/{module-name}.entity.ts` (also export from `src/db/schema/index.ts`)
+5. Add routes: `routes/{action}.{module-name}.route.ts`
+6. (Optional) Add `index.ts` for module exports
+7. Register controller in `src/main.ts` controllers array
+
+### Route Handler Template
+
+```typescript
+import { RouteHandler } from "@hono/zod-openapi";
+import { HONO_RESPONSE, HONO_ERROR } from "@/lib/utils/response-utils";
+import { HONO_LOGGER } from "@/lib/core/hono-logger";
+import { HTTP } from "@/lib/http/status-codes";
+
+export const handler: RouteHandler = async (c) => {
+  const requestId = c.get("requestId");
+
+  try {
+    HONO_LOGGER.log("Operation started", { requestId });
+
+    // Your logic here
+    const result = await SomeService.performOperation();
+
+    HONO_LOGGER.log("Operation completed", { requestId, result });
+    return c.json(HONO_RESPONSE({ data: result }), HTTP.OK);
+  } catch (error) {
+    HONO_LOGGER.error("Operation failed", { requestId, error: error.message });
+    return c.json(
+      HONO_ERROR("INTERNAL_SERVER_ERROR"),
+      HTTP.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+```
+
+### Service Class Template
+
+```typescript
+import { HONO_LOGGER } from "@/lib/core/hono-logger";
+
+export class ModuleService {
+  static async performOperation(data: any) {
+    try {
+      HONO_LOGGER.debug("Starting operation", { data });
+
+      // Your logic here
+      const result = await someAsyncOperation(data);
+
+      HONO_LOGGER.log("Operation successful", { result });
+      return result;
+    } catch (error) {
+      HONO_LOGGER.error("Operation failed", {
+        data,
+        error: error.message,
+      });
+
+      HONO_LOGGER.sentry.captureException(error, {
+        operation: "module_operation",
+        data,
+      });
+
+      throw error;
+    }
+  }
+}
+```
+
+## Development Guidelines
+
+### Code Quality
+
+- Follow TypeScript strict mode
+- Use proper error handling with try/catch
+- Include comprehensive logging with context
+- Write descriptive commit messages
+- Use meaningful variable and function names
+
+### API Design
+
+- RESTful endpoint design
+- Consistent response structures
+- Proper HTTP status codes
+- Comprehensive error messages
+- Input validation with Zod schemas
+
+### Performance
+
+- Log performance metrics
+- Use appropriate database queries
+- Implement proper caching strategies
+- Monitor memory usage
+- Track request/response times
+
+### Security
+
+- Never log sensitive information
+- Validate all inputs
+- Use proper authentication/authorization
+- Implement rate limiting
+- Follow OWASP guidelines
+
+## Tools and Dependencies
+
+- **Framework**: Hono (v4.9.2)
+- **Runtime**: Bun
+- **Database**: Drizzle ORM (v0.44.4) with PostgreSQL (postgres v3.4.7)
+- **Validation**: Zod (v4.0.17) with @hono/zod-openapi (v1.1.0)
+- **Authentication**: Better Auth (v1.3.11)
+- **Logging**: Custom structured logger with Sentry (v10.11.0)
+- **Email**: Resend (v6.0.3)
+- **API Documentation**: @scalar/hono-api-reference (v0.9.13)
+- **Code Formatting**: @biomejs/biome (v2.2.0)
+
+## Getting Started
+
+1. Follow the naming conventions for new files
+2. Use the response utilities for all API responses
+3. Implement structured logging throughout your code
+4. Include proper error handling and validation
+5. Write comprehensive tests for your modules
+
+For detailed information on each topic, refer to the specific rule files in the `rules/` directory.

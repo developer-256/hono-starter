@@ -1,20 +1,34 @@
 import { Scalar } from "@scalar/hono-api-reference";
 
-import packageJSON from "../../../package.json" with { type: "json" };
-import type { OpenAPIHono } from "@hono/zod-openapi";
+// import packageJSON from "../../../package.json" with { type: "json" };
+import type { AppOpenAPI } from "./create-router";
 
-export default function configureOpenAPI(app: OpenAPIHono) {
+export default function configureOpenAPI(app: AppOpenAPI) {
   app.doc("/doc", {
     openapi: "3.0.0",
     info: {
-      version: packageJSON.version,
+      // version: packageJSON.version,
+      version: "2",
       title: "Hono Ecom Backend",
+      description:
+        "E-commerce backend API with authentication and user management",
     },
+    servers: [
+      { url: "/api/better-auth/open-api/generate-schema" },
+      // Better Auth schema generation endpoint
+      { url: "/api/doc" },
+    ],
   });
 
   app.get(
     "/reference",
     Scalar({
+      // pageTitle: "API Documentation",
+      sources: [
+        { url: "/api/better-auth/open-api/generate-schema", title: "Auth" },
+        // Better Auth schema generation endpoint
+        { url: "/api/doc", title: "Api", default: true },
+      ],
       theme: "kepler",
       layout: "classic",
       defaultHttpClient: {
@@ -22,7 +36,25 @@ export default function configureOpenAPI(app: OpenAPIHono) {
         clientKey: "fetch",
       },
       url: "/api/doc",
-      favicon: `favicon`
+      favicon: `/api/favicon`,
+      authentication: {
+        preferredSecurityScheme: "bearerAuth",
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "token",
+            description:
+              "Bearer token authentication. Sign in to receive a token, then use it in the Authorization header as 'Bearer YOUR_TOKEN'.",
+          },
+        },
+      },
+      defaultOpenAllTags: false,
+      withDefaultFonts: true,
+      // sources: [
+      //   { url: "/api/doc", title: "Api", },
+      //   { url: "/api/better-auth/reference", title: "Auth" }
+      // ]
     })
   );
 }

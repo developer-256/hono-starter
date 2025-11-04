@@ -4,10 +4,19 @@ import {
   welcomeEmailTemplate,
   passwordResetEmailTemplate,
   orderConfirmationEmailTemplate,
+  emailVerificationEmailTemplate,
+  emailVerificationOTPTemplate,
+  passwordResetOTPTemplate,
+  signinOTPTemplate,
   type WelcomeEmailData,
   type PasswordResetEmailData,
   type OrderConfirmationEmailData,
+  type EmailVerificationEmailData,
+  type EmailVerificationOTPData,
+  type PasswordResetOTPData,
+  type SigninOTPData,
 } from "../templates";
+import { HONO_LOGGER } from "@/lib/core/hono-logger";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -65,20 +74,22 @@ export const sendEmail = async (
     const { data, error } = await resend.emails.send(emailData);
 
     if (error) {
-      console.error("❌ Email sending failed:", error);
+      HONO_LOGGER.error("❌ Email sending error:", { error });
       return {
         success: false,
         error: error.message || "Failed to send email",
       };
     }
 
-    console.log("✅ Email sent successfully:", data?.id);
+    HONO_LOGGER.info("✅ Email sent successfully:", { emailId: data?.id });
+
     return {
       success: true,
       data,
     };
   } catch (error) {
-    console.error("❌ Email sending error:", error);
+    HONO_LOGGER.error("❌ Email sending error:", { error });
+
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -145,5 +156,93 @@ export const sendOrderConfirmationEmail = async (
     subject: orderConfirmationEmailTemplate.subject(data),
     html: orderConfirmationEmailTemplate.html(data),
     text: orderConfirmationEmailTemplate.text(data),
+  });
+};
+
+/**
+ * Send an email verification email template
+ * @param to Recipient email address
+ * @param verificationLink Email verification link
+ * @param userName Optional user name
+ * @returns Promise with email response
+ */
+export const sendEmailVerificationEmail = async (
+  to: string,
+  verificationLink: string,
+  userName?: string
+): Promise<EmailResponse> => {
+  const data: EmailVerificationEmailData = { verificationLink, userName };
+
+  return sendEmail({
+    to,
+    subject: emailVerificationEmailTemplate.subject,
+    html: emailVerificationEmailTemplate.html(data),
+    text: emailVerificationEmailTemplate.text(data),
+  });
+};
+
+/**
+ * Send an email verification OTP email template
+ * @param to Recipient email address
+ * @param otp OTP code
+ * @param userName Optional user name
+ * @returns Promise with email response
+ */
+export const sendEmailVerificationOTP = async (
+  to: string,
+  otp: string,
+  userName?: string
+): Promise<EmailResponse> => {
+  const data: EmailVerificationOTPData = { otp, userName };
+
+  return sendEmail({
+    to,
+    subject: emailVerificationOTPTemplate.subject,
+    html: emailVerificationOTPTemplate.html(data),
+    text: emailVerificationOTPTemplate.text(data),
+  });
+};
+
+/**
+ * Send a password reset OTP email template
+ * @param to Recipient email address
+ * @param otp OTP code
+ * @param userName Optional user name
+ * @returns Promise with email response
+ */
+export const sendPasswordResetOTP = async (
+  to: string,
+  otp: string,
+  userName?: string
+): Promise<EmailResponse> => {
+  const data: PasswordResetOTPData = { otp, userName };
+
+  return sendEmail({
+    to,
+    subject: passwordResetOTPTemplate.subject,
+    html: passwordResetOTPTemplate.html(data),
+    text: passwordResetOTPTemplate.text(data),
+  });
+};
+
+/**
+ * Send a sign-in OTP email template
+ * @param to Recipient email address
+ * @param otp OTP code
+ * @param userName Optional user name
+ * @returns Promise with email response
+ */
+export const sendSigninOTP = async (
+  to: string,
+  otp: string,
+  userName?: string
+): Promise<EmailResponse> => {
+  const data: SigninOTPData = { otp, userName };
+
+  return sendEmail({
+    to,
+    subject: signinOTPTemplate.subject,
+    html: signinOTPTemplate.html(data),
+    text: signinOTPTemplate.text(data),
   });
 };

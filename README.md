@@ -1,89 +1,175 @@
-## Hono E-commerce API
+# ⚡ Hono Backend Starter with Better Auth Integration
 
-### Installation
+A modern backend starter built with **Hono**, **Drizzle ORM**, and **Bun** — now featuring **Better Auth** with **Google OAuth**, **Email OTP Authentication**, and **Resend** for email delivery.
+It also includes a **Role-Based Access Control (RBAC)** system for secure, scalable authorization.
 
-To install dependencies:
+---
 
-```sh
+## 🚀 Features
+
+- ⚡ **Blazing-fast** Hono + Bun setup
+- 🧩 **Type-safe** Drizzle ORM with PostgreSQL
+- 🔐 **Better Auth Integration**
+
+  - Google OAuth login
+  - Email OTP authentication via Resend
+  - Pre-configured **RBAC (Role-Based Access Control)**
+
+- 📧 **Resend** for transactional emails
+- 🪲 **Sentry** for error tracking (optional)
+- 🧱 Built-in **OpenAPI** documentation
+- 🧪 Ready for production and scalable apps
+
+---
+
+## 🧠 Want the Frontend Too?
+
+If you also want a **Next.js frontend** preconfigured with:
+
+- Better Auth client
+- Google & Email login pages
+- TanStack Query
+- OpenAPI Fetch client
+
+👉 Use this repo instead:
+[**Nextjs-and-Hono-with-Better-Auth**](https://github.com/m-umar-ch/Nextjs-and-Hono-with-Better-Auth)
+
+---
+
+## ⚙️ Installation
+
+```bash
 bun install
 ```
 
-### Environment Setup
+---
 
-Copy the environment variables and update with your values:
+## 🧩 Environment Setup
 
-```sh
+Copy the example `.env` file and update it with your values:
+
+```bash
 cp .env.example .env
 ```
 
-Required environment variables:
+### 🧾 Updated Environment Variables
 
-- `DATABASE_URL` - PostgreSQL connection string
-- `RESEND_API_KEY` - Resend email service API key
-- `SENTRY_ENABLED` - Enable/disable Sentry error monitoring
-- `SENTRY_DSN` - Sentry project DSN (if Sentry is enabled)
+```bash
+NODE_ENV="development"
+PORT=9999
+DATABASE_URL=""
 
-### Running the Application
+# Email via Resend
+RESEND_API_KEY=""
 
-To run in development mode:
+# Sentry (optional)
+SENTRY_ENABLED=false
+SENTRY_DSN=""
 
-```sh
+# Better Auth configuration
+BETTER_AUTH_SECRET="E72QvTxvgSCqTW63nfAyb5zEXoVKmRgN"
+BACKEND_BASE_URL="http://localhost:9999"
+FRONTEND_BASE_URL="http://localhost:3000"
+
+# Google OAuth credentials
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+```
+
+---
+
+## 🧭 Running the Application
+
+### Development mode
+
+```bash
 bun run dev
 ```
 
-To build for production:
+### Build for production
 
-```sh
+```bash
 bun run build
 ```
 
-To run production build:
+### Run production build
 
-```sh
+```bash
 bun run start
 ```
 
-### API Documentation
+---
 
-The server runs on http://localhost:9999 (or your configured PORT)
+## 📚 API Documentation
 
-- API Base: `http://localhost:9999/api`
-- API Documentation: `http://localhost:9999/api/reference`
+The server runs at:
 
-### Error Monitoring with Sentry
+- **Base URL:** `http://localhost:9999`
+- **API Base:** `http://localhost:9999/api`
+- **API Reference:** `http://localhost:9999/api/reference`
 
-This project includes integrated Sentry support for error monitoring, performance tracking, and logging.
+---
 
-To enable Sentry:
+## 🗄️ Database Commands
 
-1. Set `SENTRY_ENABLED=true` in your `.env` file
-2. Add your `SENTRY_DSN` from your Sentry project
-3. Optionally configure sampling rates and other options
+<details>
+<summary>Show database commands</summary>
 
-For detailed setup instructions, see: `src/lib/core/SENTRY_SETUP.md`
+### Generate migrations
 
-### Database
-
-Generate migrations:
-
-```sh
+```bash
 bun run db:generate
 ```
 
-Run migrations:
+### Run migrations
 
-```sh
+```bash
 bun run db:migrate
 ```
 
-Push schema directly (development):
+### Push schema directly (for development)
 
-```sh
+```bash
 bun run db:push
 ```
 
-Open Drizzle Studio:
+### Open Drizzle Studio
 
-```sh
+```bash
 bun run db:studio
 ```
+
+</details>
+
+---
+
+## 🪲 Error Monitoring with Sentry
+
+To enable Sentry:
+
+1. Set `SENTRY_ENABLED=true` in your `.env`
+2. Add your `SENTRY_DSN` from your Sentry project
+3. (Optional) Configure sampling or additional options in
+   `src/lib/core/SENTRY_SETUP.md`
+
+---
+
+## 🧰 Tech Stack
+
+| Tool            | Purpose                                 |
+| --------------- | --------------------------------------- |
+| **Hono**        | Lightning-fast web framework            |
+| **Bun**         | Modern JavaScript runtime               |
+| **Drizzle ORM** | Type-safe ORM for SQL databases         |
+| **Better Auth** | Authentication + RBAC                   |
+| **Resend**      | Email delivery for OTPs                 |
+| **Sentry**      | Error tracking & performance monitoring |
+
+---
+
+## 🧑‍💻 Author
+
+**Muhammad Umar Chaudhry**
+🔗 [GitHub Profile](https://github.com/m-umar-ch)
+
+⭐ If you find this starter useful, don’t forget to **star the repo**!

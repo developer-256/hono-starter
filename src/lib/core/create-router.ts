@@ -1,8 +1,15 @@
-import { OpenAPIHono, type Hook } from "@hono/zod-openapi";
+import {
+  OpenAPIHono,
+  RouteConfig,
+  RouteHandler,
+  type Hook,
+} from "@hono/zod-openapi";
 import { UNPROCESSABLE_ENTITY } from "../http/status-codes";
 import { HONO_ERROR } from "../utils/response-utils";
 import type { Context } from "hono";
 import type { ZodError } from "zod";
+import { authClient } from "@/modules/auth/service/auth-client";
+import type { Schema } from "hono";
 
 /**
  * Configuration options for creating a router instance
@@ -31,18 +38,16 @@ const createDefaultHook = (
       const issues =
         includeErrorDetails && "error" in result && result.error?.issues
           ? result.error.issues.map((issue) => ({
-              message: issue.message,
               path: issue.path.join(".") || undefined,
+              message: issue.message,
               code: issue.code || undefined,
             }))
           : [{ message: "Validation failed" }];
-
       const errorResponse = HONO_ERROR(
         "UNPROCESSABLE_ENTITY",
-        "Validation failed",
+        "Request validation failed",
         {
-          name: "Validation Error",
-          issues,
+          issues: issues.length > 0 ? issues : undefined,
           requestId,
           timestamp: true,
         }
@@ -78,7 +83,23 @@ const createDefaultHook = (
  * });
  * ```
  */
-export const createRouter = (config: RouterConfig = {}): OpenAPIHono => {
+
+export interface AppBindings {
+  Variables: {
+    user: typeof authClient.$Infer.Session.user | null;
+    session: typeof authClient.$Infer.Session.session | null;
+  };
+}
+
+// eslint-disable-next-line ts/no-empty-object-type
+export type AppOpenAPI<S extends Schema = {}> = OpenAPIHono<AppBindings, S>;
+
+export type AppRouteHandler<R extends RouteConfig> = RouteHandler<
+  R,
+  AppBindings
+>;
+
+export const createRouter = (config: RouterConfig = {}): AppOpenAPI => {
   const { strict = false, defaultHook, includeErrorDetails = true } = config;
 
   const hook = defaultHook || createDefaultHook(includeErrorDetails);

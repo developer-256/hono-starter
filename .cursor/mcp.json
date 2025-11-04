@@ -1,0 +1,95 @@
+{
+  "name": "hono-starter-rules",
+  "version": "1.0.0",
+  "description": "Coding rules and conventions for the Hono Starter project",
+  "rules": {
+    "naming-conventions": {
+      "file": "./rules/naming-conventions.mdc",
+      "description": "NestJS-inspired naming conventions for modules, files, and variables",
+      "categories": ["naming", "structure", "imports"],
+      "priority": "high"
+    },
+    "response-patterns": {
+      "file": "./rules/response-patterns.mdc",
+      "description": "Standardized API response patterns using HONO_RESPONSE and HONO_ERROR utilities",
+      "categories": ["api", "responses", "error-handling"],
+      "priority": "high"
+    },
+    "logging-patterns": {
+      "file": "./rules/logging-patterns.mdc",
+      "description": "Structured logging patterns with HONO_LOGGER and Sentry integration",
+      "categories": ["logging", "monitoring", "debugging"],
+      "priority": "medium"
+    }
+  },
+  "categories": {
+    "naming": {
+      "description": "File and variable naming conventions"
+    },
+    "structure": {
+      "description": "Project and module structure guidelines"
+    },
+    "imports": {
+      "description": "Import and export patterns"
+    },
+    "api": {
+      "description": "API design and implementation patterns"
+    },
+    "responses": {
+      "description": "HTTP response standardization"
+    },
+    "error-handling": {
+      "description": "Error handling and validation patterns"
+    },
+    "logging": {
+      "description": "Logging and monitoring practices"
+    },
+    "monitoring": {
+      "description": "Application monitoring and observability"
+    },
+    "debugging": {
+      "description": "Debugging and troubleshooting guidelines"
+    }
+  },
+  "enforcement": {
+    "strict": ["naming-conventions", "response-patterns"],
+    "recommended": ["logging-patterns"]
+  },
+  "tools": {
+    "framework": "Hono v4.9.2",
+    "runtime": "Bun",
+    "database": "Drizzle ORM v0.44.4 + PostgreSQL (postgres v3.4.7)",
+    "validation": "Zod v4.0.17 + @hono/zod-openapi v1.1.0",
+    "authentication": "Better Auth v1.3.11",
+    "monitoring": "Sentry v10.11.0",
+    "email": "Resend v6.0.3",
+    "api-docs": "@scalar/hono-api-reference v0.9.13",
+    "formatting": "@biomejs/biome v2.2.0"
+  },
+  "project-structure": {
+    "modules": ["auth", "user", "mailer"],
+    "module-pattern": {
+      "controller": "controller/{module}.controller.ts",
+      "service": "service/{module}.service.ts",
+      "entity": "entity/{module}.entity.ts",
+      "routes": "routes/{action}.{module}.route.ts"
+    },
+    "special-modules": {
+      "auth": {
+        "note": "Uses Better Auth, no traditional controller/routes",
+        "structure": ["entity/", "service/"]
+      },
+      "mailer": {
+        "note": "Includes email templates directory",
+        "structure": ["controller/", "service/", "routes/", "templates/"]
+      }
+    }
+  },
+  "metadata": {
+    "created": "2025-01-01",
+    "lastUpdated": "2025-01-27",
+    "version": "1.0.0",
+    "maintainer": "Development Team",
+    "project-type": "Hono-based API starter with Better Auth, Drizzle ORM, and Sentry"
+  }
+}
